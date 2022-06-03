@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"name": "Imagenes",
+			"path": "..\\Imagenes"
+		},
+		{
+			"name": "CSS",
+			"path": "..\\CSS"
+		},
+		{
+			"name": "HTML",
+			"path": "."
+		},
+		{
+			"name": "prueba2",
+			"path": "..\\prueba2"
+		},
+		{
+			"name": "js",
+			"path": "..\\js"
+		}
+	],
+	"settings": {}
+}
