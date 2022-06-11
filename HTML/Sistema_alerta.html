@@ -51,8 +51,8 @@
                                 <option value="0">Seleccione un tipo de alerta…</option>
                                 <option value="ultimos_sismos_chile">Últimos 15 terremotos</option>
                                 <option value="tsunami_chile">Últimos 16 boletines de Tsunami</option>
-                                <option value="onemi">Ultimas alertas e informaciones de Onemi</option>
-                                <option value="ultimos_sismos ">Últimos sismos en el Mundo</option>
+                                <option value="ultimos_sismos">Últimos sismos en el mundo</option>
+                                <option value="onemi">Alerta de información ONEMI</option>
                             </select>
                             <br>
                         </div> 
@@ -62,14 +62,23 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <table class="table" id="table_ultimos_sismos">
-                    <thead>
-                      <tr>
+              <table class="table" id="table_ultimos_sismos" >
+                  <thead id="sismos_header" hidden>
+                     <tr>
                         <th scope="col">Referencia</th>
                         <th scope="col">Magnitud</th>
                         <th scope="col">Latitud</th>
                         <th scope="col">Longitud</th>
                         <th scope="col">Hora</th>
+                      </tr>
+                    </thead>
+                    <thead id="onemi_header" hidden>
+                      <tr>
+                        <th scope="col">Ubicación</th>
+                        <th scope="col">Info</th>
+                        <th scope="col">Hora</th>
+                        <th scope="col">Código de emergencia</th>
+                        <th scope="col">URL</th>
                       </tr>
                     </thead>
                     <tbody id="tbody_disasters">
@@ -80,33 +89,43 @@
     </div>
    
     <script>
-      $('#id_alerta').change(function() {
+       $('#id_alerta').change(function() {
         var alerta_value = $("#id_alerta").val();
+        $("#sismos_header").removeAttr('hidden');
+        $("#onemi_header").removeAttr('hidden');
+        $("#sismos_header").hide();
+        $("#onemi_header").hide();
         $.get(getBasePath(alerta_value),
         function(data) {
           //console.log(data)
           $("#tbody_disasters tr").remove();
           switch (alerta_value) {
             case "tsunami_chile":
+              $("#sismos_header").show();
               $.each(data.tsunami_chile, function(i, {reference, magnitude, latitude, longitude, local_time}){
                 $("#tbody_disasters").append(createRowDisaster(reference, magnitude, latitude, longitude, local_time));
               })
               break;
             case "ultimos_sismos_chile":
+              $("#sismos_header").show();
               $.each(data.ultimos_sismos_chile, function(i, {reference, magnitude, latitude, longitude, local_time}){
                 $("#tbody_disasters").append(createRowDisaster(reference, magnitude, latitude, longitude, local_time));
               })
               break;
-            
-            case "onemi":
-              $.each(data.onemi, function(i, {post_title, alert_region, alert_date}){
-                $("#tbody_disasters").append(createRowDisaster(post_title, alert_region, alert_date));
-              })
-              break;
             case "ultimos_sismos":
-              $.each(data.ultimos_sismos, function(i, {reference, magnitude, latitude, longitude,utc_time}){
-                $("#tbody_disasters").append(createRowDisaster(reference, magnitude, latitude, longitude,utc_time));
-              })
+              $("#sismos_header").show();
+              $.each(data.ultimos_sismos, function(i, {reference, magnitude, latitude, longitude, utc_time}){
+                $("#tbody_disasters").append(createRowDisaster(reference, magnitude, latitude, longitude, utc_time));
+              });
+              break;
+            case "onemi":
+              $("#onemi_header").show();
+              $.each(data.onemi, function(i, {alert_region, post_title, alert_date, state, url}){
+                console.log(url);
+                var fixed_url = url.replace("http://www.onemi.cl", "");
+                console.log(fixed_url)
+                $("#tbody_disasters").append(createRowDisasterWithUrl(alert_region, post_title, alert_date, state, fixed_url));
+              });
               break;
 
             
